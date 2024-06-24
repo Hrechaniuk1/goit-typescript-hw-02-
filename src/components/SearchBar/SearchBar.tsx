@@ -1,17 +1,22 @@
 import toast, { Toaster } from 'react-hot-toast';
 import css from './SearchBar.module.css'
+import { FC, FormEvent } from 'react';
 
-export default function SearchBar({ onFind }) {
+import { SearchBarProps } from './SearchBar.types';
+
+const SearchBar: FC<SearchBarProps> = ({ onFind }) => {
     
-    function submitHandler(event) {
+    function submitHandler(event: FormEvent<HTMLFormElement>): void {
         event.preventDefault()
-        const data = event.target.elements.search.value
+        const form = event.target as HTMLFormElement
+        const input = form.elements.namedItem('search') as HTMLInputElement
+        const data = input.value
         if (data.length === 0) {
           toast.error('The field is empty!')
             return
         }
-        onFind(event.target.elements.search.value)
-        event.target.reset()
+        onFind(data)
+        form.reset()
     }
  
     return (
@@ -36,3 +41,5 @@ export default function SearchBar({ onFind }) {
 </header>
     )
 }
+
+export default SearchBar

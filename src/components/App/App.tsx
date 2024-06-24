@@ -8,26 +8,30 @@ import Loader from "../Loader/Loader"
 import ImageModal from "../ImageModal/ImageModal"
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
+import * as AT from './App.types'
+import { FetchType } from "../../Fetching/fetch.types"
+
 
 export default function App() {
 
-    const [imgs, setImgs] = useState([])
-    const [page, setPage] = useState(1)
-    const [keyWord, setKeyWord] = useState('')
-    const [totalPages, setTotalPages] = useState(0)
-    const [loader, setLoader] = useState(false)
-    const [error, setError] = useState(false)
-    const [modalIsOpen, setIsOpen] = useState(false);
-    const [dataModal, setDataModal] = useState({})
+    const [imgs, setImgs] = useState<AT.Imgs | []>([])
+    const [page, setPage] = useState<number>(1)
+    const [keyWord, setKeyWord] = useState<string>('')
+    const [totalPages, setTotalPages] = useState<number>(0)
+    const [loader, setLoader] = useState<boolean>(false)
+    const [error, setError] = useState<boolean>(false)
+    const [modalIsOpen, setIsOpen] = useState<boolean>(false);
+    const [dataModal, setDataModal] = useState<AT.Img | {}>({})
     // --------------------------------------------
-    const imgRef = useRef()
+    const imgRef = useRef<HTMLUListElement | null>(null)
     
-    function submitHandler(value) {
+    function submitHandler(value: string): void {
         setKeyWord(value)
         setPage(1)
         setImgs([])
     }
-    function clickHandler() {
+
+    function clickHandler(): void {
         setPage(page + 1)
     }
 
@@ -36,7 +40,7 @@ export default function App() {
             if (keyWord) {
                 try {
                     setLoader(true)
-                    const data = await fetch(keyWord, page)
+                    const data = await fetch<FetchType>(keyWord, page)
                     setTotalPages(0)
                     setError(false)
                     setLoader(false)
@@ -44,7 +48,7 @@ export default function App() {
                     page > 1 && setTimeout(() => {
                         scroll()
                          },100)
-                    setImgs(prevImgs => [...prevImgs, ...data.results])
+                    setImgs((prevImgs: AT.Imgs) => [...prevImgs, ...data.results])
                     setTotalPages(data.total_pages)
                 } catch (error) {
                     setLoader(false)
@@ -56,19 +60,20 @@ export default function App() {
     }, [keyWord, page])
     
     
-    function openModal(data) {
+    function openModal(data: AT.Img): void {
         setIsOpen(true);
         setDataModal(data)
         
     }
 
-  function closeModal() {
+  function closeModal(): void {
     setIsOpen(false);
   }
     
-    function scroll() {
+    function scroll(): void {
+        const childNode = imgRef.current?.childNodes?.[0] as HTMLElement
     imgRef.current?.childNodes?.[0] && window.scrollBy({
-                top: (imgRef.current.childNodes[0].getBoundingClientRect().height * 2),
+                top: (childNode.getBoundingClientRect().height * 2),
             left: 0,
                 behavior: "smooth",
             })
@@ -86,12 +91,12 @@ export default function App() {
             ></ImageModal>}
             {error && <ErrorMessage></ErrorMessage>}
             
-            <ImageGallery
+            {imgs.length !== 0 ?<ImageGallery
                 data={imgs}
                 openModal={openModal}
                 ref={imgRef}
             >                
-            </ImageGallery>
+            </ImageGallery> : <></>}
             {loader && <Loader></Loader>}
             {totalPages>page && <LoadMoreBtn
                 onLoadMore={clickHandler}
