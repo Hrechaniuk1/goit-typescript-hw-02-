@@ -14,14 +14,14 @@ import { FetchType } from "../../Fetching/fetch.types"
 
 export default function App() {
 
-    const [imgs, setImgs] = useState<AT.Imgs | []>([])
+    const [imgs, setImgs] = useState<AT.Imgs | null>(null)
     const [page, setPage] = useState<number>(1)
     const [keyWord, setKeyWord] = useState<string>('')
     const [totalPages, setTotalPages] = useState<number>(0)
     const [loader, setLoader] = useState<boolean>(false)
     const [error, setError] = useState<boolean>(false)
     const [modalIsOpen, setIsOpen] = useState<boolean>(false);
-    const [dataModal, setDataModal] = useState<AT.Img | {}>({})
+    const [dataModal, setDataModal] = useState<AT.Img | null>(null)
     // --------------------------------------------
     const imgRef = useRef<HTMLUListElement | null>(null)
     
@@ -48,7 +48,13 @@ export default function App() {
                     page > 1 && setTimeout(() => {
                         scroll()
                          },100)
-                    setImgs((prevImgs: AT.Imgs) => [...prevImgs, ...data.results])
+                    setImgs(prevImgs => {
+                        if(prevImgs === null) {
+                            return [...data.results]
+                        } else {
+                            return [...prevImgs, ...data.results]
+                        }
+                    })
                     setTotalPages(data.total_pages)
                 } catch (error) {
                     setLoader(false)
@@ -68,6 +74,7 @@ export default function App() {
 
   function closeModal(): void {
     setIsOpen(false);
+    setDataModal(null)
   }
     
     function scroll(): void {
@@ -84,14 +91,14 @@ export default function App() {
             <SearchBar
             onFind={submitHandler}
             ></SearchBar>
-            {modalIsOpen && <ImageModal
+            {modalIsOpen && dataModal && <ImageModal
                 info={dataModal}
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
             ></ImageModal>}
             {error && <ErrorMessage></ErrorMessage>}
             
-            {imgs.length !== 0 ?<ImageGallery
+            {imgs ? <ImageGallery
                 data={imgs}
                 openModal={openModal}
                 ref={imgRef}

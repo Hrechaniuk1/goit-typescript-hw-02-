@@ -3,7 +3,7 @@ import { ImageCardProps } from "./ImageCard.types"
 
 const ImageCard: FC<ImageCardProps> = ({ url, name, fullInfo, openModal }) => {
 
-    function clickHandler() {
+    function clickHandler(): void {
         openModal(fullInfo)
     }
 
