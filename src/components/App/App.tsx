@@ -9,7 +9,6 @@ import ImageModal from "../ImageModal/ImageModal"
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 import * as AT from './App.types'
-import { FetchType } from "../../Fetching/fetch.types"
 
 
 export default function App() {
@@ -40,7 +39,7 @@ export default function App() {
             if (keyWord) {
                 try {
                     setLoader(true)
-                    const data = await fetch<FetchType>(keyWord, page)
+                    const data = await fetch(keyWord, page)
                     setTotalPages(0)
                     setError(false)
                     setLoader(false)
@@ -48,13 +47,15 @@ export default function App() {
                     page > 1 && setTimeout(() => {
                         scroll()
                          },100)
-                    setImgs(prevImgs => {
+                    setImgs(prevImgs => 
+                        {
                         if(prevImgs === null) {
                             return [...data.results]
                         } else {
                             return [...prevImgs, ...data.results]
                         }
-                    })
+                    }
+                )
                     setTotalPages(data.total_pages)
                 } catch (error) {
                     setLoader(false)

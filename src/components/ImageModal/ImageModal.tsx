@@ -1,10 +1,10 @@
-import Modal from 'react-modal';
+import Modal, {Styles} from 'react-modal';
 import css from './ImageModal.module.css'
 
 import { ImageModalProps, ModalStyles } from './ImageModal.types';
 import { FC } from 'react';
 
-const customStyles: ModalStyles = {
+const customStyles: Styles = {
     overlay: {
       position: 'fixed',
       top: 0,

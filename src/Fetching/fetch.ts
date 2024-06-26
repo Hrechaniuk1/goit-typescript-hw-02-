@@ -1,7 +1,7 @@
 import axios from "axios"
 import { FetchType } from "./fetch.types"
 
-export default async function fetch<T>(searchWord: string, page: number): Promise<T> {
+export default async function fetch(searchWord: string, page: number): Promise<FetchType> {
     const BASE_URL =`https://api.unsplash.com/search/photos`
 
         const params = {
@@ -17,7 +17,7 @@ export default async function fetch<T>(searchWord: string, page: number): Promis
             
         }
 
-        const data = await axios.get<T>(BASE_URL, { params, headers })
+        const data = await axios.get<FetchType>(BASE_URL, { params, headers })
         return data.data
 
     }
